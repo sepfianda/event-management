@@ -12,9 +12,18 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from './ui/button';
 import { Menu } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { logoutAction } from '@/redux/slices/userSlice';
 
 const Navbar = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { id } = useAppSelector((state) => state.user);
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    dispatch(logoutAction());
+  };
   return (
     <nav>
       <div className="fixed w-full h-10 bg-[#ED7D31] z-10">
@@ -26,12 +35,24 @@ const Navbar = () => {
             width={170}
             height={170}
           />
-          <div className="hidden md:block">
+          {Boolean(id) ? (
+            <div className="hidden md:block">
             <div className="flex font-extrabold cursor-pointer items-center gap-8 text-white p-5">
-              <h3>Event</h3>
-              <h3>Log In</h3>
+              <h3 onClick={() => router.push("/")}>Home</h3>
+              <h3>Create Event</h3>
+              <h3>Profile</h3>
+              <h3 onClick={logout}>Log Out</h3>
             </div>
           </div>
+          ) : (
+            <div className="hidden md:block">
+            <div className="flex font-extrabold cursor-pointer items-center gap-8 text-white p-5">
+              <h3 onClick={() => router.push("/")}>Home</h3>
+              <h3 onClick={() => router.push("/login")}>Log In</h3>
+              <h3 onClick={() => router.push("/register")}>Register</h3>
+            </div>
+          </div>
+          )}
           <DropdownMenu>
             <DropdownMenuTrigger
               asChild
